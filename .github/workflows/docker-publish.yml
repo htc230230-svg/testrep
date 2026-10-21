@@ -1,0 +1,28 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:   # чтобы можно было запустить вручную
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Логин в Docker Hub (используем секреты, которые вы создали ранее)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Сборка и отправка образа
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest
